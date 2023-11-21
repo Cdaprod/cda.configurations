@@ -1,0 +1,175 @@
+openapi: 3.0.0
+info:
+  title: GPT API
+  version: 1.0.0
+servers:
+  - url: https://api.openai.com/v1
+    description: OpenAI API Server
+
+paths:
+  /askQuestion:
+    post:
+      summary: Ask a question to the GPT
+      operationId: askQuestion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                question:
+                  type: string
+      responses:
+        '200':
+          description: GPT's response to the question
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  answer:
+                    type: string
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /updateKnowledge:
+    post:
+      summary: Update the GPT's knowledge base
+      operationId: updateKnowledge
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnowledgeUpdate'
+      responses:
+        '200':
+          description: Acknowledgement of the knowledge update
+        default:
+          description: Error in updating knowledge
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /getDocumentation:
+    get:
+      summary: Get specific MinIO documentation
+      operationId: getDocumentation
+      parameters:
+        - name: topic
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Relevant documentation content
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  documentation:
+                    type: string
+        default:
+          description: Error fetching documentation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /listIntegrations:
+    get:
+      summary: List MinIO integrations
+      operationId: listIntegrations
+      responses:
+        '200':
+          description: A list of MinIO integrations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        default:
+          description: Error listing integrations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    KnowledgeUpdate:
+      type: object
+      properties:
+        documentation:
+          type: string
+        integrations:
+          type: array
+          items:
+            type: string
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+    CompletionRequest:
+      type: object
+      properties:
+        prompt:
+          type: string
+        max_tokens:
+          type: integer
+        temperature:
+          type: number
+        top_p:
+          type: number
+    CompletionResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+        created:
+          type: integer
+        model:
+          type: string
+        choices:
+          type: array
+          items:
+            type: object
+            properties:
+              text:
+                type: string
+              index:
+                type: integer
+              logprobs:
+                type: object
+              finish_reason:
+                type: string
+
+security:
+  - ApiKeyAuth: []
+
+securitySchemes:
+  ApiKeyAuth:
+    type: apiKey
+    in: header
+    name: X-API-KEY
