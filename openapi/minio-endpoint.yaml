@@ -1,0 +1,89 @@
+openapi: 3.0.0
+info:
+  title: MinIO API
+  version: '1.0'
+servers:
+  - url: 'https://minio.cdaprod.dev'
+paths:
+  /bucket/{bucket_name}:
+    get:
+      operationId: getBucket
+      summary: Retrieve a specific bucket
+      parameters:
+        - in: path
+          name: bucket_name
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Bucket retrieved successfully
+  /bucket/{bucket_name}/object/{object_name}:
+    get:
+      operationId: getObject
+      summary: Retrieve a specific object from a bucket
+      parameters:
+        - in: path
+          name: bucket_name
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: object_name
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Object retrieved successfully
+    put:
+      operationId: putObject
+      summary: Upload an object to a bucket
+      parameters:
+        - in: path
+          name: bucket_name
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: object_name
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: Object uploaded successfully
+          
+components:
+  schemas:
+    Bucket:
+      type: object
+      properties:
+        name:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+    Object:
+      type: object
+      properties:
+        name:
+          type: string
+        lastModified:
+          type: string
+          format: date-time
+        eTag:
+          type: string
+        size:
+          type: integer
+        contentType:
+          type: string
+        storageClass:
+          type: string

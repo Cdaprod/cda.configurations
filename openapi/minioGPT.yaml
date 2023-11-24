@@ -1,0 +1,126 @@
+openapi: 3.0.0
+info:
+  title: Comprehensive MinIO Go Client API
+  version: 1.0.0
+servers:
+  - url: https://minio.cdaprod.dev/
+paths:
+  /New:
+    get:
+      summary: Initializes a new client object
+      # ... details of the New function
+  /ListBuckets:
+    get:
+      summary: Lists all buckets
+      # ... details of the ListBuckets function
+  # ... other standard MinIO Go API endpoints
+  /generateMetadata:
+    post:
+      summary: Generates structured metadata for semi-categorized buckets
+      operationId: generateMetadata
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MetadataRequest'
+      responses:
+        '200':
+          description: Successfully generated metadata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetadataResponse'
+components:
+  schemas:
+    # ... schemas for standard MinIO Go API components
+    MetadataRequest:
+      # ... schema for MetadataRequest
+    MetadataResponse:
+      # ... schema for MetadataResponse
+
+
+openapi: 3.0.0
+info:
+  title: Comprehensive MinIO Go Client API
+  version: 1.0.0
+servers:
+  - url: https://minio.cdaprod.dev/
+paths:
+  /New:
+    get:
+      summary: Initializes a new client object
+      parameters:
+        - name: endpoint
+          in: query
+          description: S3 compatible object storage endpoint
+          required: true
+          schema:
+            type: string
+        - name: opts
+          in: query
+          description: Options for constructing a new client
+          required: true
+          schema:
+            $ref: '#/components/schemas/Options'
+  # ... other standard MinIO Go API endpoints
+  /generateMetadata:
+    post:
+      summary: Generates structured metadata for semi-categorized buckets
+      operationId: generateMetadata
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MetadataRequest'
+      responses:
+        '200':
+          description: Successfully generated metadata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetadataResponse'
+components:
+  schemas:
+    Options:
+      type: object
+      properties:
+        Creds:
+          type: string
+          description: S3 compatible object storage access credentials
+        Secure:
+          type: boolean
+          description: If ‘true’, API requests will be secure (HTTPS), otherwise insecure (HTTP)
+        Transport:
+          type: string
+          description: Custom transport for executing HTTP transactions
+        Region:
+          type: string
+          description: S3 compatible object storage region
+        BucketLookup:
+          type: string
+          description: Bucket lookup type, can be DNS, Path, or Auto
+    MetadataRequest:
+      type: object
+      properties:
+        bucketName:
+          type: string
+          description: Name of the bucket to process
+        categorizationRules:
+          type: array
+          items:
+            type: string
+          description: Rules for categorizing and indexing objects
+        format:
+          type: string
+          description: Desired format for the metadata output (e.g., JSON, XML)
+    MetadataResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          description: Status of the metadata generation process
+        metadataFile:
+          type: string
+          description: Link or path to the generated metadata.json file
